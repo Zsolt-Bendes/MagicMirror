@@ -1,0 +1,78 @@
+﻿@page "/"
+
+@implements IDisposable
+@inject IWeatherForecastService WeatherForecastService
+@inject TimeService TimeService
+
+@if (currentWeather != null)
+{
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col">
+				<h1>@currentDate.ToShortTimeString():@currentDate.Second</h1>
+				<h2>@currentDate.DayOfWeek</h2>
+				<h2>@currentDate.ToShortDateString()[..^1]</h2>
+			</div>
+			<!--current weather-->
+			<div class="row">
+				@foreach (var item in currentWeather.Results)
+				{
+					<div class="col">
+						<h1>@item.City</h1>
+						<img src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:86px" />
+						<h2>@item.Temp °C</h2>
+						<h2>@item.Description</h2>
+						<h2>Max: @item.TempMax °C</h2>
+						<h2>Min: @item.TempMin °C</h2>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+@code {
+	WeatherResponse currentWeather;
+	CancellationTokenSource streamingWeatherCTS = new CancellationTokenSource();
+	CancellationTokenSource timeServiceCTS = new CancellationTokenSource();
+
+	DateTime currentDate;
+
+	protected override async Task OnInitializedAsync()
+	{
+		currentWeather = await WeatherForecastService.GetWeather();
+	}
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_ = GetWeatherUpdates();
+			_ = GetCurrentTimeUpdates();
+		}
+	}
+
+	async Task GetWeatherUpdates()
+	{
+		await foreach (var weatherResponse in WeatherForecastService.GetStreamingWeather(streamingWeatherCTS.Token))
+		{
+			currentWeather = weatherResponse;
+			StateHasChanged();
+		}
+	}
+
+	async Task GetCurrentTimeUpdates()
+	{
+		await foreach (var time in TimeService.GetCurrentTimeAsync(timeServiceCTS.Token))
+		{
+			currentDate = time;
+			StateHasChanged();
+		}
+	}
+
+	void IDisposable.Dispose()
+	{
+		streamingWeatherCTS.Cancel();
+		timeServiceCTS.Cancel();
+	}
+}

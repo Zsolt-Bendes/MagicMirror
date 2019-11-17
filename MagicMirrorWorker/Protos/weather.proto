@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option csharp_namespace = "MagicMirrorWorker.Protos";
+
+package Weather;
+
+import "google/protobuf/empty.proto";
+
+service Weather {
+  rpc GetWeatherStream(google.protobuf.Empty) returns (stream WeatherResponse);
+  rpc GetWeather(google.protobuf.Empty) returns (WeatherResponse);
+}
+
+message WeatherResponse  {
+  repeated WeatherModel results = 1;
+}
+
+message WeatherModel {
+  string city = 1;
+  float temp = 2;
+  float temp_min = 3;
+  float temp_max = 4;
+  int32 humidity = 5;
+  string description = 6;
+  Wind wind = 7;
+  int32 weather_id = 8;
+  string main = 9;
+  string icon = 10;
+}
+
+message Wind {
+  float speed = 1;
+  int32 deg = 2;
+}
