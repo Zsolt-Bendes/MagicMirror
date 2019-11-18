@@ -14,7 +14,7 @@ In the mornings we usually get up, drink a coffe and wake the kids and prepare t
 
 - What is the weather going to be today here and there?
 
-- Is the departure of our morning train delayd?
+- Is the departure of our morning train delayed?
 
 - What time is it?
 
@@ -28,11 +28,11 @@ The solution is based on [dotnet-presentations](https://github.com/dotnet-presen
 
 ### Frontend
 
-- Server-side **Blazor **(C# 8.0)
+- Server-side **Blazor** (C# 8.0)
 
 - client side **grpc**
 
-- Some bootsrap 4 and html
+- Some bootstrap 4 and html
 
 ### Backend
 
