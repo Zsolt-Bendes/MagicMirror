@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using MagicMirrorWorker.Utilities;
 using MagicMirrorWorker.Workers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -44,7 +40,7 @@ namespace MagicMirrorWorker
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<Services.WeatherService>();
-                
+
                 endpoints.MapGet("/proto", async req =>
                 {
                     await req.Response.SendFileAsync("Protos/weather.proto", req.RequestAborted);

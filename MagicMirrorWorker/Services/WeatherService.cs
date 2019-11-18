@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using MagicMirrorWorker.Protos;
+using MagicMirrorWorker.Utilities;
 using MagicMirrorWorker.Utilities.Converters;
 using Microsoft.Extensions.Caching.Memory;
 using System;

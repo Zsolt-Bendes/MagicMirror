@@ -1,4 +1,5 @@
 ﻿using MagicMirrorWorker.Models.Weather;
+using MagicMirrorWorker.Utilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;

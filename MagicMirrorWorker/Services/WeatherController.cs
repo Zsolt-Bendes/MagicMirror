@@ -1,4 +1,5 @@
 ﻿using MagicMirrorWorker.Protos;
+using MagicMirrorWorker.Utilities;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
