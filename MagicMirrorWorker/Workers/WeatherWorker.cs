@@ -32,25 +32,28 @@ namespace MagicMirrorWorker.Workers
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var getWeatherInGyor = GetWeatherAsync("Győr");
-                var getWeatherInVienna = GetWeatherAsync("Vienna");
-
-                _cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, new WeatherResults
+                try
                 {
-                    Weathers = new OpenWeather[]
+                    var getWeatherInGyor = GetWeatherAsync("Győr");
+                    var getWeatherInVienna = GetWeatherAsync("Vienna");
+
+                    _cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, new WeatherResults
                     {
+                        Weathers = new OpenWeather[]
+                        {
                         await getWeatherInGyor,
                         await getWeatherInVienna
-                    }
-                });
+                        }
+                    });
 
-                await Task.Delay(TimeSpan.FromMinutes(60));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Unexpected error fetching weather data: {ex.Data}");
+                    await Task.Delay(TimeSpan.FromMinutes(60));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Unexpected error fetching weather data: {ex.Data}");
+                } 
             }
         }
 
