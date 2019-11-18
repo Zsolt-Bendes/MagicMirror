@@ -23,7 +23,7 @@
 				"11n" => "wi-night-thunderstorm",
 				"13n" => "wi-night-snow",
 				"50n" => "wi-night-alt-cloudy-windy",
-				_ => ""
+				_ => "wi-day-sunny"
 			};
 	}
 }
