@@ -1,0 +1,33 @@
+﻿@implements IDisposable
+@inject ITimeService TimeService
+
+<h1>@currentDate.ToShortTimeString()</h1>
+<h2>@currentDate.DayOfWeek</h2>
+<h2>@currentDate.ToShortDateString()[..^1]</h2>
+
+@code {
+	DateTime currentDate;
+	CancellationTokenSource timeServiceCTS = new CancellationTokenSource();
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_ = GetCurrentTimeUpdates();
+		}
+	}
+
+	async Task GetCurrentTimeUpdates()
+	{
+		await foreach (var time in TimeService.GetCurrentTimeAsync(timeServiceCTS.Token))
+		{
+			currentDate = time;
+			StateHasChanged();
+		}
+	}
+
+	void IDisposable.Dispose()
+	{
+		timeServiceCTS.Cancel();
+	}
+}
