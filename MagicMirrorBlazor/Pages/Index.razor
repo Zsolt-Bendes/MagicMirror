@@ -2,14 +2,14 @@
 
 @implements IDisposable
 @inject IWeatherForecastService WeatherForecastService
-@inject TimeService TimeService
+@inject ITimeService TimeService
 
 @if (currentWeather != null)
 {
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col">
-				<h1>@currentDate.ToShortTimeString():@currentDate.Second</h1>
+				<h1>@currentDate.ToShortTimeString()</h1>
 				<h2>@currentDate.DayOfWeek</h2>
 				<h2>@currentDate.ToShortDateString()[..^1]</h2>
 			</div>

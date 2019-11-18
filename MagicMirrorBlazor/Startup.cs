@@ -27,7 +27,7 @@ namespace MagicMirrorBlazor
 			{
 				options.Address = new System.Uri("https://localhost:5001");
 			});
-			services.AddSingleton<TimeService>();
+			services.AddTimeService();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -24,5 +24,12 @@ namespace WeatherClientLib
             services.Configure(configure);
             return services;
         }
+
+        public static IServiceCollection AddTimeService(
+            this IServiceCollection services)
+        {
+            services.AddSingleton<ITimeService, TimeService>();
+            return services;
+        }
     }
 }
