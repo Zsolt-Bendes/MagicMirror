@@ -73,7 +73,7 @@ namespace MagicMirrorWorker.Workers
 			var client = _httpClientFactory.CreateClient(Constants.OPEN_WEATHER_CLIENT_NAME);
 			client.BaseAddress = new Uri(_configuration["OpenWeather:Url"]);
 
-			var response = await client.GetAsync($"weather?q={cityName}&APPID={_configuration["OpenWeather:AppId"]}&units={_configuration["OpenWeather:Unit"]}&lang=hu");
+			var response = await client.GetAsync($"weather?q={cityName}&APPID={_configuration["OpenWeather:AppId"]}&units={_configuration["OpenWeather:Unit"]}&lang={WeatherApiLanguage.hu}");
 			if (response.IsSuccessStatusCode)
 			{
 				return await JsonSerializer.DeserializeAsync<OpenWeather>(await response.Content.ReadAsStreamAsync());
