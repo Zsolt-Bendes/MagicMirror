@@ -14,8 +14,9 @@ namespace MagicMirrorWorker.Workers
 {
 	public class WeatherWorker : BackgroundService
 	{
-		private static readonly string[] _cities = new string[] { "Győr", "Vienna" };
-		private readonly Task<OpenWeather>[] _weatherTasks = new Task<OpenWeather>[_cities.Length];
+		private static readonly string[] _cities = new string[] { "Gyor", "Vienna" };
+		private readonly Task<WeatherCurrent>[] _currentWeatherTasks = new Task<WeatherCurrent>[_cities.Length];
+		private readonly Task<WeatherForecast>[] _forecastWeatherTasks = new Task<WeatherForecast>[_cities.Length];
 
 		private readonly ILogger<WeatherWorker> _logger;
 		private readonly IConfiguration _configuration;
@@ -42,19 +43,21 @@ namespace MagicMirrorWorker.Workers
 				{
 					for (int i = 0; i < _cities.Length; i++)
 					{
-						_weatherTasks[i] = GetWeatherAsync(_cities[i]);
+						_currentWeatherTasks[i] = GetWeatherCurrentAsync(_cities[i]);
+						_forecastWeatherTasks[i] = GetWeatherForcastAsync(_cities[i]);
 					}
 
 					var responseContainer = new WeatherResults
 					{
-						Weathers = new OpenWeather[_cities.Length]
+						CurrentWeathers = new WeatherCurrent[_cities.Length],
+						Forecasts = new WeatherForecast[_cities.Length]
 					};
 
-					await Task.WhenAll(_weatherTasks);
+					await Task.WhenAll(_currentWeatherTasks);
 
-					for (int i = 0; i < _weatherTasks.Length; i++)
+					for (int i = 0; i < _currentWeatherTasks.Length; i++)
 					{
-						responseContainer.Weathers[i] = _weatherTasks[i].Result;
+						responseContainer.CurrentWeathers[i] = _currentWeatherTasks[i].Result;
 					}
 
 					_cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, responseContainer);
@@ -68,7 +71,7 @@ namespace MagicMirrorWorker.Workers
 			}
 		}
 
-		private async Task<OpenWeather> GetWeatherAsync(string cityName)
+		private async Task<WeatherCurrent> GetWeatherCurrentAsync(string cityName)
 		{
 			var client = _httpClientFactory.CreateClient(Constants.OPEN_WEATHER_CLIENT_NAME);
 			client.BaseAddress = new Uri(_configuration["OpenWeather:Url"]);
@@ -76,10 +79,24 @@ namespace MagicMirrorWorker.Workers
 			var response = await client.GetAsync($"weather?q={cityName}&APPID={_configuration["OpenWeather:AppId"]}&units={_configuration["OpenWeather:Unit"]}&lang={WeatherApiLanguage.hu}");
 			if (response.IsSuccessStatusCode)
 			{
-				return await JsonSerializer.DeserializeAsync<OpenWeather>(await response.Content.ReadAsStreamAsync());
+				return await JsonSerializer.DeserializeAsync<WeatherCurrent>(await response.Content.ReadAsStreamAsync());
 			}
 
 			throw new Exception("Unexpected error fetching weather data");
+		}
+
+		private async Task<WeatherForecast> GetWeatherForcastAsync(string cityName)
+		{
+			var client = _httpClientFactory.CreateClient(Constants.OPEN_WEATHER_CLIENT_NAME);
+			client.BaseAddress = new Uri(_configuration["OpenWeather:Url"]);
+
+			var response = await client.GetAsync($"forecast?q={cityName}&APPID={_configuration["OpenWeather:AppId"]}&units={_configuration["OpenWeather:Unit"]}&lang={WeatherApiLanguage.hu}");
+			if (response.IsSuccessStatusCode)
+			{
+				return await JsonSerializer.DeserializeAsync<WeatherForecast>(await response.Content.ReadAsStreamAsync());
+			}
+
+			throw new Exception("Unexpected error fetching weather forecast data");
 		}
 	}
 }

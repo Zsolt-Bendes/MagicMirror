@@ -4,7 +4,7 @@ namespace MagicMirrorWorker.Utilities.Converters
 {
 	public static class WeatherConverters
 	{
-		public static Protos.WeatherModel ConvertToWeatherRespone(this Models.Weather.OpenWeather openWeather)
+		public static Protos.WeatherModel ConvertToWeatherRespone(this Models.Weather.WeatherCurrent openWeather)
 		{
 			return new Protos.WeatherModel()
 			{

@@ -7,6 +7,7 @@ namespace MagicMirrorWorker.Models.Weather
 {
     public class WeatherResults
     {
-        public OpenWeather[] Weathers { get; set; }
+        public WeatherCurrent[] CurrentWeathers { get; set; }
+        public WeatherForecast[] Forecasts { get; set; }
     }
 }

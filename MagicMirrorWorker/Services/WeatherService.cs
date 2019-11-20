@@ -38,7 +38,7 @@ namespace MagicMirrorWorker.Services
 		public static WeatherResponse ConvertToCurrentWeatherResponse(Models.Weather.WeatherResults weather)
 		{
 			var response = new WeatherResponse();
-			response.Results.AddRange(weather.Weathers.Select(x => x.ConvertToWeatherRespone()));
+			response.Results.AddRange(weather.CurrentWeathers.Select(x => x.ConvertToWeatherRespone()));
 
 			return response;
 		}
