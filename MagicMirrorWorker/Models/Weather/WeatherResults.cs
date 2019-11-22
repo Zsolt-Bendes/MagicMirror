@@ -1,13 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MagicMirrorWorker.Models.Weather
 {
     public class WeatherResults
     {
-        public WeatherCurrent[] CurrentWeathers { get; set; }
-        public WeatherForecast[] Forecasts { get; set; }
+        public List<WeatherCurrent> CurrentWeathers { get; set; }
+        public List<WeatherForecast> Forecasts { get; set; }
+
+        public WeatherResults() { }
+
+        public WeatherResults(int capacity)
+        {
+            CurrentWeathers = new List<WeatherCurrent>(capacity);
+            Forecasts = new List<WeatherForecast>(capacity);
+        }
     }
 }

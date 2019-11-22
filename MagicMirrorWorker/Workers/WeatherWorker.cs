@@ -17,9 +17,6 @@ namespace MagicMirrorWorker.Workers
 	public class WeatherWorker : BackgroundService
 	{
 		private static readonly string[] _cities = new string[] { "Gyor", "Vienna" };
-		private readonly Task<WeatherCurrent>[] _currentWeatherTasks = new Task<WeatherCurrent>[_cities.Length];
-		private readonly Task<WeatherForecast>[] _forecastWeatherTasks = new Task<WeatherForecast>[_cities.Length];
-
 		private readonly List<Task> _tasks = new List<Task>(_cities.Length * 2);
 
 		private readonly ILogger<WeatherWorker> _logger;
@@ -51,13 +48,9 @@ namespace MagicMirrorWorker.Workers
 						_tasks.Add(GetWeatherForcastAsync(item));
 					}
 
-					var responseContainer = new WeatherResults();
 					await Task.WhenAll(_tasks.ToArray());
 
-					responseContainer.CurrentWeathers = _tasks.Where(x => x is Task<WeatherCurrent>).Select(x => (x as Task<WeatherCurrent>).Result).ToArray();
-					responseContainer.Forecasts = _tasks.Where(x => x is Task<WeatherForecast>).Select(x => (x as Task<WeatherForecast>).Result).ToArray();
-
-					_cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, responseContainer);
+					_cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, CreateWeatherResultsContainer());
 					_tasks.Clear();
 					await Task.Delay(TimeSpan.FromMinutes(5));
 				}
@@ -65,6 +58,25 @@ namespace MagicMirrorWorker.Workers
 				{
 					_logger.LogError($"Unexpected error fetching weather data: {ex.Data}");
 				}
+			}
+
+			WeatherResults CreateWeatherResultsContainer()
+			{
+				var container = new WeatherResults(_cities.Length);
+
+				foreach (var task in _tasks)
+				{
+					if (task is Task<WeatherCurrent> currentTask)
+					{
+						container.CurrentWeathers.Add(currentTask.Result);
+					}
+					if (task is Task<WeatherForecast> forecastTask)
+					{
+						container.Forecasts.Add(forecastTask.Result);
+					}
+				}
+
+				return container;
 			}
 		}
 
