@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
@@ -17,6 +19,8 @@ namespace MagicMirrorWorker.Workers
 		private static readonly string[] _cities = new string[] { "Gyor", "Vienna" };
 		private readonly Task<WeatherCurrent>[] _currentWeatherTasks = new Task<WeatherCurrent>[_cities.Length];
 		private readonly Task<WeatherForecast>[] _forecastWeatherTasks = new Task<WeatherForecast>[_cities.Length];
+
+		private readonly List<Task> _tasks = new List<Task>(_cities.Length * 2);
 
 		private readonly ILogger<WeatherWorker> _logger;
 		private readonly IConfiguration _configuration;
@@ -41,27 +45,20 @@ namespace MagicMirrorWorker.Workers
 			{
 				try
 				{
-					for (int i = 0; i < _cities.Length; i++)
+					foreach (var item in _cities)
 					{
-						_currentWeatherTasks[i] = GetWeatherCurrentAsync(_cities[i]);
-						_forecastWeatherTasks[i] = GetWeatherForcastAsync(_cities[i]);
+						_tasks.Add(GetWeatherCurrentAsync(item));
+						_tasks.Add(GetWeatherForcastAsync(item));
 					}
 
-					var responseContainer = new WeatherResults
-					{
-						CurrentWeathers = new WeatherCurrent[_cities.Length],
-						Forecasts = new WeatherForecast[_cities.Length]
-					};
+					var responseContainer = new WeatherResults();
+					await Task.WhenAll(_tasks.ToArray());
 
-					await Task.WhenAll(_currentWeatherTasks);
-
-					for (int i = 0; i < _currentWeatherTasks.Length; i++)
-					{
-						responseContainer.CurrentWeathers[i] = _currentWeatherTasks[i].Result;
-					}
+					responseContainer.CurrentWeathers = _tasks.Where(x => x is Task<WeatherCurrent>).Select(x => (x as Task<WeatherCurrent>).Result).ToArray();
+					responseContainer.Forecasts = _tasks.Where(x => x is Task<WeatherForecast>).Select(x => (x as Task<WeatherForecast>).Result).ToArray();
 
 					_cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, responseContainer);
-
+					_tasks.Clear();
 					await Task.Delay(TimeSpan.FromMinutes(5));
 				}
 				catch (Exception ex)

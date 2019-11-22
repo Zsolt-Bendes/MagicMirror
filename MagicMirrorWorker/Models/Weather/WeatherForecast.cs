@@ -9,13 +9,13 @@ namespace MagicMirrorWorker.Models.Weather
     public class WeatherForecast
 	{
         [JsonPropertyName("cod")]
-        public long Cod { get; set; }
+        public string Cod { get; set; }
 
         [JsonPropertyName("message")]
-        public long Message { get; set; }
+        public int Message { get; set; }
 
         [JsonPropertyName("cnt")]
-        public long Cnt { get; set; }
+        public int Cnt { get; set; }
 
         [JsonPropertyName("list")]
         public List<List> List { get; set; }
@@ -27,7 +27,7 @@ namespace MagicMirrorWorker.Models.Weather
     public class City
     {
         [JsonPropertyName("id")]
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -72,7 +72,7 @@ namespace MagicMirrorWorker.Models.Weather
         public Rain Rain { get; set; }
 
         [JsonPropertyName("dt_txt")]
-        public DateTimeOffset DtTxt { get; set; }
+        public string DtTxt { get; set; }
     }
 
     public class MainClass
