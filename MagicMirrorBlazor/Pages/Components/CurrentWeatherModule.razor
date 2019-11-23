@@ -1,13 +1,13 @@
 ﻿@implements IDisposable
 @inject IWeatherForecastService WeatherForecastService
 
-@if (currentWeather is null)
+@if (weatherResponse is null)
 {
 	<p>Loading...</p>
 }
 else
 {
-	@foreach (var item in currentWeather.Results)
+	@foreach (var item in weatherResponse.CurrentWeathers)
 	{
 		<div class="col text-center ml-2 mr-2">
 			<h1>@item.City</h1>
@@ -22,12 +22,12 @@ else
 
 
 @code {
-	WeatherResponse currentWeather;
+	WeatherResponse weatherResponse;
 	CancellationTokenSource streamingWeatherCTS = new CancellationTokenSource();
 
 	protected override async Task OnInitializedAsync()
 	{
-		currentWeather = await WeatherForecastService.GetWeather();
+		weatherResponse = await WeatherForecastService.GetWeather();
 	}
 
 	protected override void OnAfterRender(bool firstRender)
@@ -35,15 +35,14 @@ else
 		if (firstRender)
 		{
 			_ = GetWeatherUpdates();
-
 		}
 	}
 
 	async Task GetWeatherUpdates()
 	{
-		await foreach (var weatherResponse in WeatherForecastService.GetStreamingWeather(streamingWeatherCTS.Token))
+		await foreach (var response in WeatherForecastService.GetStreamingWeather(streamingWeatherCTS.Token))
 		{
-			currentWeather = weatherResponse;
+			weatherResponse = response;
 			StateHasChanged();
 		}
 	}

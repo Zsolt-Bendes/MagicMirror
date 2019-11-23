@@ -4,25 +4,55 @@ namespace MagicMirrorWorker.Utilities.Converters
 {
 	public static class WeatherConverters
 	{
-		public static Protos.WeatherModel ConvertToWeatherRespone(this Models.Weather.WeatherCurrent openWeather)
+		public static Protos.WeatherCurrentModel ConvertToCurrentWeather(this Models.Weather.WeatherCurrent openWeather) => new Protos.WeatherCurrentModel()
 		{
-			return new Protos.WeatherModel()
+			City = openWeather.Name,
+			Description = openWeather.Weather.First().Description,
+			Humidity = openWeather.Main.Humidity,
+			Temp = openWeather.Main.Temp,
+			TempMax = openWeather.Main.TempMax,
+			TempMin = openWeather.Main.TempMin,
+			WeatherId = openWeather.Weather.First().Id,
+			Wind = new Protos.Wind
 			{
-				City = openWeather.Name,
-				Description = openWeather.Weather.First().Description,
-				Humidity = openWeather.Main.Humidity,
-				Temp = openWeather.Main.Temp,
-				TempMax = openWeather.Main.TempMax,
-				TempMin = openWeather.Main.TempMin,
-				WeatherId = openWeather.Weather.First().Id,
-				Wind = new Protos.Wind
+				Deg = openWeather.Wind.Deg,
+				Speed = openWeather.Wind.Speed
+			},
+			Main = openWeather.Weather.First().Main,
+			Icon = openWeather.Weather.First().Icon
+		};
+
+		public static Protos.WeatherForecast ConvertToWeatherForcast(this Models.Weather.WeatherForecast weatherForecast)
+		{
+			var result = new Protos.WeatherForecast()
+			{
+				City = new Protos.City()
 				{
-					Deg = openWeather.Wind.Deg,
-					Speed = openWeather.Wind.Speed
+					Name = weatherForecast.City.Name,
+					Sunrise = (ulong)weatherForecast.City.Sunrise,
+					Sunset = (ulong)weatherForecast.City.Sunset,
 				},
-				Main = openWeather.Weather.First().Main,
-				Icon = openWeather.Weather.First().Icon
 			};
+
+			result.Forecasts.AddRange(weatherForecast.List.Select(x => x.ConvertToForecast()));
+			return result;
 		}
+
+		private static Protos.Forecast ConvertToForecast(this Models.Weather.List list) => new Protos.Forecast()
+		{
+			Wind = new Protos.Wind()
+			{
+				Speed = list.Wind.Speed,
+				Deg = list.Wind.Deg
+			},
+			Main = list.Weather.First().Main,
+			Description = list.Weather.First().Description,
+			Icon = list.Weather.First().Icon,
+			Humidity = list.Main.Humidity,
+			Temp = list.Main.Temp,
+			TempMin = list.Main.TempMin,
+			TempMax = list.Main.TempMax,
+			WeatherId = list.Weather.First().Id
+		};
 	}
 }

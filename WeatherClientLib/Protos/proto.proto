@@ -12,10 +12,11 @@ service Weather {
 }
 
 message WeatherResponse  {
-  repeated WeatherModel results = 1;
+  repeated WeatherCurrentModel currentWeathers = 1;
+  repeated WeatherForecast forecastWeathers = 2;
 }
 
-message WeatherModel {
+message WeatherCurrentModel {
   string city = 1;
   float temp = 2;
   float temp_min = 3;
@@ -31,4 +32,27 @@ message WeatherModel {
 message Wind {
   float speed = 1;
   int32 deg = 2;
+}
+
+message WeatherForecast {
+  City city = 1;
+  repeated Forecast Forecasts = 2;
+}
+
+message City {
+  string name = 1;
+  uint64 sunrise = 2;
+  uint64 sunset = 3;
+}
+
+message Forecast {
+  Wind wind = 1;
+  int32 weather_id = 2;
+  string main = 3;
+  string icon = 4;
+  string description = 5;
+  float temp = 6;
+  float temp_min = 7;
+  float temp_max = 8;
+  int32 humidity = 9;
 }

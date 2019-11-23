@@ -57,7 +57,7 @@ namespace MagicMirrorWorker.Models.Weather
         public long Dt { get; set; }
 
         [JsonPropertyName("main")]
-        public MainClass Main { get; set; }
+        public Main Main { get; set; }
 
         [JsonPropertyName("weather")]
         public List<Weather> Weather { get; set; }
@@ -73,32 +73,5 @@ namespace MagicMirrorWorker.Models.Weather
 
         [JsonPropertyName("dt_txt")]
         public string DtTxt { get; set; }
-    }
-
-    public class MainClass
-    {
-        [JsonPropertyName("temp")]
-        public double Temp { get; set; }
-
-        [JsonPropertyName("temp_min")]
-        public double TempMin { get; set; }
-
-        [JsonPropertyName("temp_max")]
-        public double TempMax { get; set; }
-
-        [JsonPropertyName("pressure")]
-        public long Pressure { get; set; }
-
-        [JsonPropertyName("sea_level")]
-        public long SeaLevel { get; set; }
-
-        [JsonPropertyName("grnd_level")]
-        public long GrndLevel { get; set; }
-
-        [JsonPropertyName("humidity")]
-        public long Humidity { get; set; }
-
-        [JsonPropertyName("temp_kf")]
-        public double TempKf { get; set; }
     }
 }
