@@ -19,7 +19,9 @@ namespace MagicMirrorWorker.Utilities.Converters
 				Speed = openWeather.Wind.Speed
 			},
 			Main = openWeather.Weather.First().Main,
-			Icon = openWeather.Weather.First().Icon
+			Icon = openWeather.Weather.First().Icon,
+			Sunrise = openWeather.Sys.Sunrise,
+			Sunset = openWeather.Sys.Sunset
 		};
 
 		public static Protos.WeatherForecast ConvertToWeatherForcast(this Models.Weather.WeatherForecast weatherForecast)
@@ -29,8 +31,8 @@ namespace MagicMirrorWorker.Utilities.Converters
 				City = new Protos.City()
 				{
 					Name = weatherForecast.City.Name,
-					Sunrise = (ulong)weatherForecast.City.Sunrise,
-					Sunset = (ulong)weatherForecast.City.Sunset,
+					Sunrise = weatherForecast.City.Sunrise,
+					Sunset = weatherForecast.City.Sunset,
 				},
 			};
 

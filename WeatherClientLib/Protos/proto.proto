@@ -27,6 +27,8 @@ message WeatherCurrentModel {
   int32 weather_id = 8;
   string main = 9;
   string icon = 10;
+  int64 sunrise = 11;
+  int64 sunset = 12;
 }
 
 message Wind {
@@ -41,8 +43,8 @@ message WeatherForecast {
 
 message City {
   string name = 1;
-  uint64 sunrise = 2;
-  uint64 sunset = 3;
+  int64 sunrise = 2;
+  int64 sunset = 3;
 }
 
 message Forecast {

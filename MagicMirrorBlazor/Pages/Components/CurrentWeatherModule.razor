@@ -12,18 +12,22 @@ else
 		<div class="row">
 			@foreach (var item in weatherResponse.CurrentWeathers)
 			{
+				var sunriseInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunrise).ToLocalTime();
+				var sunsetInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunset).ToLocalTime();
+
 				<div class="col text-center ml-2 mr-2">
-					<p class="border-bottom text-right" style="font-size: 20px">@item.City.ToUpper()</p>
+					<p class="border-bottom text-right" style="font-size: 24px">@item.City.ToUpper()</p>
 					<div class="row" style="align-items:center">
-						@if (ShowSunrise())
+						@if (DateTime.UtcNow < sunriseInDateTime && DateTime.UtcNow > sunsetInDateTime)
 						{
 							<img src="css/weather/svg/wi-sunrise.svg" style="width:38px" />
+							<span style="font-size: 20px">@sunriseInDateTime.ToString("HH:mm")</span>
 						}
 						else
 						{
 							<img src="css/weather/svg/wi-sunset.svg" style="width:38px" />
+							<span style="font-size: 20px">@sunsetInDateTime.ToString("HH:mm")</span>
 						}
-						20:00
 					</div>
 
 					<img src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:86px" />
@@ -68,7 +72,4 @@ else
 	{
 		streamingWeatherCTS.Cancel();
 	}
-
-	bool ShowSunrise()
-		=> DateTime.UtcNow.Hour < 6 && DateTime.UtcNow.Hour > 17;
 }

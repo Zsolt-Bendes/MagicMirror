@@ -43,6 +43,18 @@ namespace MagicMirrorWorker.Models.Weather
 
         [JsonPropertyName("cod")]
         public long Cod { get; set; }
+
+        [JsonPropertyName("sys")]
+        public Sys Sys { get; set; }
+    }
+
+    public class Sys
+    {
+        [JsonPropertyName("sunrise")]
+        public long Sunrise { get; set; }
+
+        [JsonPropertyName("sunset")]
+        public long Sunset { get; set; }
     }
 
     public class Main
