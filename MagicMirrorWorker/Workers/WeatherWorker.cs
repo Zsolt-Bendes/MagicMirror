@@ -51,12 +51,22 @@ namespace MagicMirrorWorker.Workers
 					await Task.WhenAll(_tasks.ToArray());
 
 					_cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, CreateWeatherResultsContainer());
-					_tasks.Clear();
-					await Task.Delay(TimeSpan.FromMinutes(5));
+					await Task.Delay(TimeSpan.FromMinutes(Constants.OPEN_WEATHER_REFRESH_INTERVAL));
+
+				}
+				catch (TimeoutException timeOutEx)
+				{
+					// Log timeout and honoring the expires time
+					_logger.LogWarning($"Open weather API limit reached. Data: {timeOutEx.Data}");
+					await Task.Delay(TimeSpan.FromMinutes(60));
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError($"Unexpected error fetching weather data: {ex.Data}");
+				}
+				finally
+				{
+					_tasks.Clear();
 				}
 			}
 
@@ -90,6 +100,10 @@ namespace MagicMirrorWorker.Workers
 			{
 				return await JsonSerializer.DeserializeAsync<WeatherCurrent>(await response.Content.ReadAsStreamAsync());
 			}
+			if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+			{
+				throw new TimeoutException();
+			}
 
 			throw new Exception("Unexpected error fetching weather data");
 		}
@@ -103,6 +117,10 @@ namespace MagicMirrorWorker.Workers
 			if (response.IsSuccessStatusCode)
 			{
 				return await JsonSerializer.DeserializeAsync<WeatherForecast>(await response.Content.ReadAsStreamAsync());
+			}
+			if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+			{
+				throw new TimeoutException();
 			}
 
 			throw new Exception("Unexpected error fetching weather forecast data");

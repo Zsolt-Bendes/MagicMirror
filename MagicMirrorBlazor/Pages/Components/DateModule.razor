@@ -1,9 +1,16 @@
 ﻿@implements IDisposable
 @inject ITimeService TimeService
 
-<h1>@currentDate.ToShortTimeString()</h1>
-<h2>@currentDate.DayOfWeek</h2>
-<h2>@currentDate.ToShortDateString()[..^1]</h2>
+@using System.Globalization
+
+<div class="col">
+	<div class="row">
+		<h3>@($"{currentDate.Year}, {currentDate.ToString("MMM", CultureInfo.InvariantCulture)} {currentDate.Day}, {currentDate.DayOfWeek}")</h3>
+	</div>
+	<div class="row" style="align-items:baseline" >
+		<span class="clock-time">@($"{currentDate.ToString("HH:mm")}")</span><span class="clock-time-seconds">@currentDate.Second.ToString("00")</span>
+	</div>
+</div>
 
 @code {
 	DateTime currentDate;

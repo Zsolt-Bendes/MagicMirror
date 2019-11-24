@@ -7,17 +7,34 @@
 }
 else
 {
-	@foreach (var item in weatherResponse.CurrentWeathers)
-	{
-		<div class="col text-center ml-2 mr-2">
-			<h1>@item.City</h1>
-			<img src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:86px" />
-			<h2>@item.Temp.ToString("0") °C</h2>
-			<h2>@item.Description</h2>
-			<h2>Max: @item.TempMax.ToString("0") °C</h2>
-			<h2>Min: @item.TempMin.ToString("0") °C</h2>
+	<div class="col-6">
+		<h1>Today</h1>
+		<div class="row">
+			@foreach (var item in weatherResponse.CurrentWeathers)
+			{
+				<div class="col text-center ml-2 mr-2">
+					<p class="border-bottom text-right" style="font-size: 20px">@item.City.ToUpper()</p>
+					<div class="row" style="align-items:center">
+						@if (ShowSunrise())
+						{
+							<img src="css/weather/svg/wi-sunrise.svg" style="width:38px" />
+						}
+						else
+						{
+							<img src="css/weather/svg/wi-sunset.svg" style="width:38px" />
+						}
+						20:00
+					</div>
+
+					<img src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:86px" />
+					<h2>@item.Temp.ToString("0") °C</h2>
+					<h2>@item.Description</h2>
+					<h2>Max: @item.TempMax.ToString("0") °C</h2>
+					<h2>Min: @item.TempMin.ToString("0") °C</h2>
+				</div>
+			}
 		</div>
-	}
+	</div>
 }
 
 
@@ -51,4 +68,7 @@ else
 	{
 		streamingWeatherCTS.Cancel();
 	}
+
+	bool ShowSunrise()
+		=> DateTime.UtcNow.Hour < 6 && DateTime.UtcNow.Hour > 17;
 }
