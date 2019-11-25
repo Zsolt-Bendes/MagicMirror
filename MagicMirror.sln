@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29505.145
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicMirrorWorker", "MagicMirrorWorker\MagicMirrorWorker.csproj", "{6688260B-C04C-4D76-9E4A-1383DABC7595}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagicMirrorWorker", "MagicMirrorWorker\MagicMirrorWorker.csproj", "{6688260B-C04C-4D76-9E4A-1383DABC7595}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicMirrorBlazor", "MagicMirrorBlazor\MagicMirrorBlazor.csproj", "{01DD8CB2-6FA1-4100-ACF9-C5824C9310DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagicMirrorBlazor", "MagicMirrorBlazor\MagicMirrorBlazor.csproj", "{01DD8CB2-6FA1-4100-ACF9-C5824C9310DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherClientLib", "WeatherClientLib\WeatherClientLib.csproj", "{BA2D388C-A885-4C69-97BF-C23AA1289631}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherClientLib", "WeatherClientLib\WeatherClientLib.csproj", "{BA2D388C-A885-4C69-97BF-C23AA1289631}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
