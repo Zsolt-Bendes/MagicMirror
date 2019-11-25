@@ -17,22 +17,22 @@ else
             <div class="col-auto">
                 <p class="border-bottom text-right" style="font-size: 24px">@item.City.ToUpper()</p>
                 <div class="row">
-                    <div class="col-auto" >
-                        <div class="row no-gutters flex-nowrap" >
+                    <div class="col-auto">
+                        <div class="row no-gutters flex-nowrap" style="align-items:center">
                             @if (DateTime.UtcNow < sunriseInDateTime && DateTime.UtcNow > sunsetInDateTime)
                             {
-                                <img class="img-fluid" src="css/weather/svg/wi-sunrise.svg" style="width:38px" />
+                                <img class="img-fluid" src="css/weather/svg/wi-sunrise.svg" style="width:28px" />
                                 <span style="font-size: 20px">@sunriseInDateTime.ToString("HH:mm")</span>
                             }
                             else
                             {
-                                <img class="img-fluid" src="css/weather/svg/wi-sunset.svg" style="width:38px" />
+                                <img class="img-fluid" src="css/weather/svg/wi-sunset.svg" style="width:28px" />
                                 <span style="font-size: 20px">@sunsetInDateTime.ToString("HH:mm")</span>
                             }
                         </div>
                     </div>
                     <div class="col-auto">
-                        <div class="row no-gutters flex-nowrap">
+                        <div class="row no-gutters flex-nowrap" style="align-items:center">
                             <span style="font-size: 20px">@item.Humidity </span>
                             <img class="img-fluid" src="css/weather/svg/wi-humidity.svg" style="width:28px" />
                         </div>
@@ -40,17 +40,30 @@ else
 
                     <div class="col-auto">
                         <div class="row no-gutters flex-nowrap" style="align-items:center">
-                            <img class="img-fluid" src="css/weather/svg/wi-strong-wind.svg" style="width:38px" />
+                            <img class="img-fluid" src="css/weather/svg/wi-strong-wind.svg" style="width:28px" />
                             <span style="font-size: 20px">@item.Wind.Speed</span>
                         </div>
                     </div>
                 </div>
 
-                <img class="img-fluid" src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:86px" />
-                <h2>@item.Temp.ToString("0") °C</h2>
-                <h2>@item.Description</h2>
-                <h2>Max: @item.TempMax.ToString("0") °C</h2>
-                <h2>Min: @item.TempMin.ToString("0") °C</h2>
+                <div class="row no-gutters justify-content-between" style="align-items:center">
+                    <img class="img-fluid" src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:100px" />
+                    <span style="font-size:3.7rem">@item.Temp.ToString("0.0")°C</span>
+                </div>
+
+                <p style="font-size: 24px">@item.Description</p>
+
+                <div class="row">
+                    <span>
+                        <img class="img-fluid" src="css/weather/svg/wi-thermometer.svg" style="width:28px" />
+                        <span style="font-size: 20px">@item.TempMax.ToString("0")°C</span>
+                    </span>
+
+                    <span class="ml-3" >
+                        <img class="img-fluid" src="css/weather/svg/wi-thermometer-exterior.svg" style="width:28px" />
+                        <span style="font-size: 20px">@item.TempMin.ToString("0")°C</span>
+                    </span>
+                </div>
             </div>
         }
     </div>
