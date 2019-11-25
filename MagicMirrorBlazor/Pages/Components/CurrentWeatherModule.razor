@@ -3,73 +3,88 @@
 
 @if (weatherResponse is null)
 {
-	<p>Loading...</p>
+    <p>Loading...</p>
 }
 else
 {
-	<div class="col-6">
-		<h1>Today</h1>
-		<div class="row">
-			@foreach (var item in weatherResponse.CurrentWeathers)
-			{
-				var sunriseInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunrise).ToLocalTime();
-				var sunsetInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunset).ToLocalTime();
+    <h1>Today</h1>
+    <div class="row">
+        @foreach (var item in weatherResponse.CurrentWeathers)
+        {
+            var sunriseInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunrise).ToLocalTime();
+            var sunsetInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunset).ToLocalTime();
 
-				<div class="col text-center ml-2 mr-2">
-					<p class="border-bottom text-right" style="font-size: 24px">@item.City.ToUpper()</p>
-					<div class="row" style="align-items:center">
-						@if (DateTime.UtcNow < sunriseInDateTime && DateTime.UtcNow > sunsetInDateTime)
-						{
-							<img src="css/weather/svg/wi-sunrise.svg" style="width:38px" />
-							<span style="font-size: 20px">@sunriseInDateTime.ToString("HH:mm")</span>
-						}
-						else
-						{
-							<img src="css/weather/svg/wi-sunset.svg" style="width:38px" />
-							<span style="font-size: 20px">@sunsetInDateTime.ToString("HH:mm")</span>
-						}
-					</div>
+            <div class="col-auto">
+                <p class="border-bottom text-right" style="font-size: 24px">@item.City.ToUpper()</p>
+                <div class="row">
+                    <div class="col-auto" >
+                        <div class="row no-gutters flex-nowrap" >
+                            @if (DateTime.UtcNow < sunriseInDateTime && DateTime.UtcNow > sunsetInDateTime)
+                            {
+                                <img class="img-fluid" src="css/weather/svg/wi-sunrise.svg" style="width:38px" />
+                                <span style="font-size: 20px">@sunriseInDateTime.ToString("HH:mm")</span>
+                            }
+                            else
+                            {
+                                <img class="img-fluid" src="css/weather/svg/wi-sunset.svg" style="width:38px" />
+                                <span style="font-size: 20px">@sunsetInDateTime.ToString("HH:mm")</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="row no-gutters flex-nowrap">
+                            <span style="font-size: 20px">@item.Humidity </span>
+                            <img class="img-fluid" src="css/weather/svg/wi-humidity.svg" style="width:28px" />
+                        </div>
+                    </div>
 
-					<img src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:86px" />
-					<h2>@item.Temp.ToString("0") °C</h2>
-					<h2>@item.Description</h2>
-					<h2>Max: @item.TempMax.ToString("0") °C</h2>
-					<h2>Min: @item.TempMin.ToString("0") °C</h2>
-				</div>
-			}
-		</div>
-	</div>
+                    <div class="col-auto">
+                        <div class="row no-gutters flex-nowrap" style="align-items:center">
+                            <img class="img-fluid" src="css/weather/svg/wi-strong-wind.svg" style="width:38px" />
+                            <span style="font-size: 20px">@item.Wind.Speed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <img class="img-fluid" src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:86px" />
+                <h2>@item.Temp.ToString("0") °C</h2>
+                <h2>@item.Description</h2>
+                <h2>Max: @item.TempMax.ToString("0") °C</h2>
+                <h2>Min: @item.TempMin.ToString("0") °C</h2>
+            </div>
+        }
+    </div>
 }
 
 
 @code {
-	WeatherResponse weatherResponse;
-	CancellationTokenSource streamingWeatherCTS = new CancellationTokenSource();
+    WeatherResponse weatherResponse;
+    CancellationTokenSource streamingWeatherCTS = new CancellationTokenSource();
 
-	protected override async Task OnInitializedAsync()
-	{
-		weatherResponse = await WeatherForecastService.GetWeather();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        weatherResponse = await WeatherForecastService.GetWeather();
+    }
 
-	protected override void OnAfterRender(bool firstRender)
-	{
-		if (firstRender)
-		{
-			_ = GetWeatherUpdates();
-		}
-	}
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _ = GetWeatherUpdates();
+        }
+    }
 
-	async Task GetWeatherUpdates()
-	{
-		await foreach (var response in WeatherForecastService.GetStreamingWeather(streamingWeatherCTS.Token))
-		{
-			weatherResponse = response;
-			StateHasChanged();
-		}
-	}
+    async Task GetWeatherUpdates()
+    {
+        await foreach (var response in WeatherForecastService.GetStreamingWeather(streamingWeatherCTS.Token))
+        {
+            weatherResponse = response;
+            StateHasChanged();
+        }
+    }
 
-	void IDisposable.Dispose()
-	{
-		streamingWeatherCTS.Cancel();
-	}
+    void IDisposable.Dispose()
+    {
+        streamingWeatherCTS.Cancel();
+    }
 }
