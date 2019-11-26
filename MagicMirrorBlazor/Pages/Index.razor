@@ -1,11 +1,21 @@
 ﻿@page "/"
 
+@implements IDisposable
+@inject IWeatherForecastService WeatherForecastService
+
 <div class="container-fluid">
 	<div class="row">
 		<!--current weather-->
 		<div class="col">
-			<MagicMirrorBlazor.Pages.Components.CurrentWeatherModule />
+			<MagicMirrorBlazor.Pages.Components.CurrentWeatherModule 
+				Weathers="@weatherResponse?.CurrentWeathers?.ToList()"
+				WeatherForecasts="@weatherResponse?.ForecastWeathers?.ToList()"/>
 		</div>
+
+		<!--Forecasts-->
+		@*<div class="col">
+			<MagicMirrorBlazor.Pages.Components.WeatherForecastModule WeatherForecasts="@weatherResponse?.ForecastWeathers?.ToList()" />
+		</div>*@
 
 		<!--current date-->
 		<div class="col-auto">
@@ -15,4 +25,33 @@
 </div>
 
 @code {
+	WeatherResponse weatherResponse;
+	CancellationTokenSource _forecastServiceCTS = new CancellationTokenSource();
+
+	protected override async Task OnInitializedAsync()
+	{
+		weatherResponse = await WeatherForecastService.GetWeather();
+	}
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_ = GetForecastUpdates();
+		}
+	}
+
+	async Task GetForecastUpdates()
+	{
+		await foreach (var response in WeatherForecastService.GetStreamingWeather(_forecastServiceCTS.Token))
+		{
+			weatherResponse = response;
+			StateHasChanged();
+		}
+	}
+
+	void IDisposable.Dispose()
+	{
+		_forecastServiceCTS.Cancel();
+	}
 }

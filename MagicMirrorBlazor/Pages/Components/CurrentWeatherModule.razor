@@ -1,102 +1,103 @@
-﻿@implements IDisposable
-@inject IWeatherForecastService WeatherForecastService
-
-@if (weatherResponse is null)
+﻿
+@if (Weathers is null)
 {
     <p>Loading...</p>
 }
 else
 {
-    <div class="row">
-        @foreach (var item in weatherResponse.CurrentWeathers)
-        {
-            var sunriseInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunrise).ToLocalTime();
-            var sunsetInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunset).ToLocalTime();
+<div class="row">
+    @foreach (var item in Weathers)
+    {
+        var sunriseInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunrise).ToLocalTime();
+        var sunsetInDateTime = DateTimeOffset.FromUnixTimeSeconds(@item.Sunset).ToLocalTime();
+
+        var tomorrow = WeatherForecasts.Find(x => x.City.Name == item.City)?.Forecasts?.First();
+
+    <div class="col-auto">
+        <p class="border-bottom text-right" style="font-size: 24px">@item.City.ToUpper() TODAY</p>
+
+        <div class="row">
+            <div class="col-auto">
+                <div class="row no-gutters flex-nowrap" style="align-items:center">
+                    @if (DateTime.UtcNow < sunriseInDateTime && DateTime.UtcNow > sunsetInDateTime)
+                    {
+                        <img class="img-fluid" src="css/weather/svg/wi-sunrise.svg" style="width:28px" />
+                        <span style="font-size: 20px">@sunriseInDateTime.ToString("HH:mm")</span>
+                    }
+                    else
+                    {
+                        <img class="img-fluid" src="css/weather/svg/wi-sunset.svg" style="width:28px" />
+                        <span style="font-size: 20px">@sunsetInDateTime.ToString("HH:mm")</span>
+                    }
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="row no-gutters flex-nowrap" style="align-items:center">
+                    <span style="font-size: 20px">@item.Humidity </span>
+                    <img class="img-fluid" src="css/weather/svg/wi-humidity.svg" style="width:28px" />
+                </div>
+            </div>
 
             <div class="col-auto">
-                <p class="border-bottom text-right" style="font-size: 24px">@item.City.ToUpper()</p>
-                <div class="row">
-                    <div class="col-auto">
-                        <div class="row no-gutters flex-nowrap" style="align-items:center">
-                            @if (DateTime.UtcNow < sunriseInDateTime && DateTime.UtcNow > sunsetInDateTime)
-                            {
-                                <img class="img-fluid" src="css/weather/svg/wi-sunrise.svg" style="width:28px" />
-                                <span style="font-size: 20px">@sunriseInDateTime.ToString("HH:mm")</span>
-                            }
-                            else
-                            {
-                                <img class="img-fluid" src="css/weather/svg/wi-sunset.svg" style="width:28px" />
-                                <span style="font-size: 20px">@sunsetInDateTime.ToString("HH:mm")</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <div class="row no-gutters flex-nowrap" style="align-items:center">
-                            <span style="font-size: 20px">@item.Humidity </span>
-                            <img class="img-fluid" src="css/weather/svg/wi-humidity.svg" style="width:28px" />
-                        </div>
-                    </div>
-
-                    <div class="col-auto">
-                        <div class="row no-gutters flex-nowrap" style="align-items:center">
-                            <img class="img-fluid" src="css/weather/svg/wi-strong-wind.svg" style="width:28px" />
-                            <span style="font-size: 20px">@item.Wind.Speed</span>
-                        </div>
-                    </div>
+                <div class="row no-gutters flex-nowrap" style="align-items:center">
+                    <img class="img-fluid" src="css/weather/svg/wi-strong-wind.svg" style="width:28px" />
+                    <span style="font-size: 20px">@item.Wind.Speed</span>
                 </div>
+            </div>
+        </div>
 
-                <div class="row no-gutters justify-content-between" style="align-items:center">
-                    <img class="img-fluid" src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:100px" />
-                    <span style="font-size:3.7rem">@item.Temp.ToString("0.0")°C</span>
-                </div>
+        <div class="row no-gutters justify-content-between" style="align-items:center">
+            <img class="img-fluid" src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(item.Icon.ToLower())).svg" style="width:100px" />
+            <span style="font-size:3.7rem">@item.Temp.ToString("0.0")°C</span>
+        </div>
 
-                <p style="font-size: 24px">@item.Description</p>
+        <p style="font-size: 24px">@item.Description</p>
 
-                <div class="row">
-                    <span>
-                        <img class="img-fluid" src="css/weather/svg/wi-thermometer.svg" style="width:28px" />
-                        <span style="font-size: 20px">@item.TempMax.ToString("0")°C</span>
-                    </span>
+        <div class="row">
+            <span>
+                <img class="img-fluid" src="css/weather/svg/wi-thermometer.svg" style="width:28px" />
+                <span style="font-size: 20px">@item.TempMax.ToString("0")°C</span>
+            </span>
 
-                    <span class="ml-3" >
-                        <img class="img-fluid" src="css/weather/svg/wi-thermometer-exterior.svg" style="width:28px" />
-                        <span style="font-size: 20px">@item.TempMin.ToString("0")°C</span>
-                    </span>
-                </div>
+            <span class="ml-3">
+                <img class="img-fluid" src="css/weather/svg/wi-thermometer-exterior.svg" style="width:28px" />
+                <span style="font-size: 20px">@item.TempMin.ToString("0")°C</span>
+            </span>
+        </div>
+
+        @if (tomorrow != null)
+        {
+            <p class="border-bottom text-right" style="font-size: 24px">@item.City.ToUpper() TOMORROW</p>
+
+            <div class="row no-gutters justify-content-between" style="align-items:center">
+                <img class="img-fluid" src="css/weather/svg/@(WeatherIconMapper.MapToWeatherIconName(tomorrow.Icon.ToLower())).svg" style="width:100px" />
+                <span style="font-size:3.7rem">@tomorrow.Temp.ToString("0.0")°C</span>
+            </div>
+
+            <p style="font-size: 24px">@tomorrow.Description</p>
+
+            <div class="row">
+                <span>
+                    <img class="img-fluid" src="css/weather/svg/wi-thermometer.svg" style="width:28px" />
+                    <span style="font-size: 20px">@tomorrow.TempMax.ToString("0")°C</span>
+                </span>
+
+                <span class="ml-3">
+                    <img class="img-fluid" src="css/weather/svg/wi-thermometer-exterior.svg" style="width:28px" />
+                    <span style="font-size: 20px">@tomorrow.TempMin.ToString("0")°C</span>
+                </span>
             </div>
         }
     </div>
+    }
+</div>
 }
 
 
 @code {
-    WeatherResponse weatherResponse;
-    CancellationTokenSource streamingWeatherCTS = new CancellationTokenSource();
+    [Parameter]
+    public List<WeatherCurrentModel> Weathers { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        weatherResponse = await WeatherForecastService.GetWeather();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _ = GetWeatherUpdates();
-        }
-    }
-
-    async Task GetWeatherUpdates()
-    {
-        await foreach (var response in WeatherForecastService.GetStreamingWeather(streamingWeatherCTS.Token))
-        {
-            weatherResponse = response;
-            StateHasChanged();
-        }
-    }
-
-    void IDisposable.Dispose()
-    {
-        streamingWeatherCTS.Cancel();
-    }
+    [Parameter]
+    public List<WeatherForecast> WeatherForecasts { get; set; }
 }
