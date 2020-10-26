@@ -1,6 +1,9 @@
 ﻿using Grpc.Net.ClientFactory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using WeatherClientLib.Models;
+using WeatherClientLib.Services.TimeService;
+using WeatherClientLib.Services.WeatherService;
 using static MagicMirrorWorker.Protos.Weather;
 
 namespace WeatherClientLib
@@ -25,11 +28,6 @@ namespace WeatherClientLib
             return services;
         }
 
-        public static IServiceCollection AddTimeService(
-            this IServiceCollection services)
-        {
-            services.AddSingleton<ITimeService, TimeService>();
-            return services;
-        }
+        public static void AddTimeService(this IServiceCollection services) => services.AddSingleton<ITimeService, TimeService>();
     }
 }

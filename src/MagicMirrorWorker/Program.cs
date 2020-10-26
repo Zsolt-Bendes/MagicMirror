@@ -49,22 +49,22 @@ namespace MagicMirrorWorker
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.ConfigureKestrel(options =>
-                    {
-                        options.Listen(IPAddress.Any, 5050, listenOptions =>
-                        {
-                            listenOptions.Protocols = HttpProtocols.Http2;
-                        });
-                        options.Listen(IPAddress.Any, 5051, listenOptions =>
-                        {
-                            listenOptions.Protocols = HttpProtocols.Http1;
-                        });
-                        options.Listen(IPAddress.Any, 5001, listenOptions =>
-                        {
-                            listenOptions.UseHttps();
-                            listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-                        });
-                    });
+                    //webBuilder.ConfigureKestrel(options =>
+                    //{
+                    //    options.Listen(IPAddress.Any, 5050, listenOptions =>
+                    //    {
+                    //        listenOptions.Protocols = HttpProtocols.Http2;
+                    //    });
+                    //    options.Listen(IPAddress.Any, 5051, listenOptions =>
+                    //    {
+                    //        listenOptions.Protocols = HttpProtocols.Http1;
+                    //    });
+                    //    options.Listen(IPAddress.Any, 5001, listenOptions =>
+                    //    {
+                    //        listenOptions.UseHttps();
+                    //        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+                    //    });
+                    //});
                 });
     }
 }

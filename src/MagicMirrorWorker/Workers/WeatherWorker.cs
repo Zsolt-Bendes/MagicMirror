@@ -13,10 +13,10 @@ namespace MagicMirrorWorker.Workers
 {
     public class WeatherWorker : BackgroundService
     {
-        private const int OPEN_WEATHER_REFRESH_INTERVAL = 10;
+        private const int _open_weather_refresh_interval = 10;
 
-        private static readonly string[] _cities = new string[] { "Gyor", "Vienna" };
-        private readonly List<Task> _tasks = new List<Task>(_cities.Length * 2);
+        private static readonly string[] _cities = { "Gyor", "Vienna" };
+        private readonly List<Task> _tasks = new(_cities.Length * 2);
 
         private readonly ILogger<WeatherWorker> _logger;
         private readonly IOpenWeatheHttpClient _openWeatheHttpClient;
@@ -44,21 +44,21 @@ namespace MagicMirrorWorker.Workers
                         _tasks.Add(_openWeatheHttpClient.GetForecastWeatherAsync(item));
                     }
 
-                    await Task.WhenAll(_tasks.ToArray());
+                    await Task.WhenAll(_tasks);
 
-                    _cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, CreateWeatherResultsContainer());
-                    await Task.Delay(TimeSpan.FromMinutes(OPEN_WEATHER_REFRESH_INTERVAL));
+                    _cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, CreateWeatherResultsContainer(_tasks));
+                    await Task.Delay(TimeSpan.FromMinutes(_open_weather_refresh_interval), stoppingToken);
 
                 }
                 catch (TimeoutException timeOutEx)
                 {
                     // Log timeout and honoring the expires time
                     _logger.LogWarning($"Open weather API limit reached. Data: {timeOutEx.Data}");
-                    await Task.Delay(TimeSpan.FromMinutes(60));
+                    await Task.Delay(TimeSpan.FromMinutes(60), stoppingToken);
                 }
                 catch (Exception ex)
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(60));
+                    await Task.Delay(TimeSpan.FromMinutes(60), stoppingToken);
                     _logger.LogError($"Unexpected error fetching weather data: {ex.Data}");
                 }
                 finally
@@ -67,19 +67,20 @@ namespace MagicMirrorWorker.Workers
                 }
             }
 
-            WeatherResults CreateWeatherResultsContainer()
+            static WeatherResults CreateWeatherResultsContainer(List<Task> tasks)
             {
-                var container = new WeatherResults(_cities.Length);
+                WeatherResults container = new(_cities.Length);
 
-                foreach (var task in _tasks)
+                foreach (var task in tasks)
                 {
-                    if (task is Task<WeatherCurrent> currentTask)
+                    switch (task)
                     {
-                        container.CurrentWeathers.Add(currentTask.Result);
-                    }
-                    if (task is Task<WeatherForecast> forecastTask)
-                    {
-                        container.Forecasts.Add(forecastTask.Result);
+                        case Task<WeatherCurrent> currentTask:
+                            container.CurrentWeathers.Add(currentTask.Result);
+                            break;
+                        case Task<WeatherForecast> forecastTask:
+                            container.Forecasts.Add(forecastTask.Result);
+                            break;
                     }
                 }
 
