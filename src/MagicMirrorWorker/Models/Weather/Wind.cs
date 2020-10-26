@@ -2,7 +2,7 @@
 
 namespace MagicMirrorWorker.Models.Weather
 {
-	public class Wind
+    public class Wind
     {
         [JsonPropertyName("speed")]
         public float Speed { get; set; }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace MagicMirrorWorker.Models.Weather
 {
     public class WeatherForecast
-	{
+    {
         [JsonPropertyName("cod")]
         public string Cod { get; set; }
 

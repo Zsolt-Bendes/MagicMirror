@@ -1,6 +1,4 @@
-﻿using MagicMirrorWorker.Models.Weather;
-
-namespace MagicMirrorWorker.Models.Options
+﻿namespace MagicMirrorWorker.Models.Options
 {
     public class OpenWeatherApiOptions
     {

@@ -1,15 +1,11 @@
-﻿using MagicMirrorWorker.Models.Options;
-using MagicMirrorWorker.Models.Weather;
+﻿using MagicMirrorWorker.Models.Weather;
 using MagicMirrorWorker.Utilities;
 using MagicMirrorWorker.Utilities.TypedHttpClients.OpenWeather;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,6 +13,8 @@ namespace MagicMirrorWorker.Workers
 {
     public class WeatherWorker : BackgroundService
     {
+        private const int OPEN_WEATHER_REFRESH_INTERVAL = 10;
+
         private static readonly string[] _cities = new string[] { "Gyor", "Vienna" };
         private readonly List<Task> _tasks = new List<Task>(_cities.Length * 2);
 
@@ -49,7 +47,7 @@ namespace MagicMirrorWorker.Workers
                     await Task.WhenAll(_tasks.ToArray());
 
                     _cache.Set(Constants.LATEST_FORECAST_CACHE_KEY, CreateWeatherResultsContainer());
-                    await Task.Delay(TimeSpan.FromMinutes(Constants.OPEN_WEATHER_REFRESH_INTERVAL));
+                    await Task.Delay(TimeSpan.FromMinutes(OPEN_WEATHER_REFRESH_INTERVAL));
 
                 }
                 catch (TimeoutException timeOutEx)
@@ -60,6 +58,7 @@ namespace MagicMirrorWorker.Workers
                 }
                 catch (Exception ex)
                 {
+                    await Task.Delay(TimeSpan.FromMinutes(60));
                     _logger.LogError($"Unexpected error fetching weather data: {ex.Data}");
                 }
                 finally
@@ -87,41 +86,5 @@ namespace MagicMirrorWorker.Workers
                 return container;
             }
         }
-
-        //private async Task<WeatherCurrent> GetWeatherCurrentAsync(string cityName)
-        //{
-        //    var client = _httpClientFactory.CreateClient(Constants.OPEN_WEATHER_CLIENT_NAME);
-        //    client.BaseAddress = new Uri(_weatherSettings.Url);
-
-        //    var response = await client.GetAsync($"weather?q={cityName}&APPID={_weatherSettings.AppKey}&units={_weatherSettings.Unit}&lang={_weatherSettings.Language}");
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        return await JsonSerializer.DeserializeAsync<WeatherCurrent>(await response.Content.ReadAsStreamAsync());
-        //    }
-        //    if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-        //    {
-        //        throw new TimeoutException();
-        //    }
-
-        //    throw new Exception("Unexpected error fetching weather data");
-        //}
-
-        //private async Task<WeatherForecast> GetWeatherForcastAsync(string cityName)
-        //{
-        //    var client = _httpClientFactory.CreateClient(Constants.OPEN_WEATHER_CLIENT_NAME);
-        //    client.BaseAddress = new Uri(_weatherSettings.Url);
-
-        //    var response = await client.GetAsync($"forecast?q={cityName}&APPID={_weatherSettings.AppKey}&units={_weatherSettings.Unit}&lang={_weatherSettings.Language}");
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        return await JsonSerializer.DeserializeAsync<WeatherForecast>(await response.Content.ReadAsStreamAsync());
-        //    }
-        //    if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-        //    {
-        //        throw new TimeoutException();
-        //    }
-
-        //    throw new Exception("Unexpected error fetching weather forecast data");
-        //}
     }
 }

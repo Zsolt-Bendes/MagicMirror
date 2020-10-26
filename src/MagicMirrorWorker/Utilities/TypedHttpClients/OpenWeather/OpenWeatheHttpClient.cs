@@ -18,7 +18,7 @@ namespace MagicMirrorWorker.Utilities.TypedHttpClients.OpenWeather
         public OpenWeatheHttpClient(IOptions<OpenWeatherApiOptions> options, HttpClient httpClient)
         {
             _options = options.Value;
-            _httpClient = httpClient; 
+            _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri(_options.Url);
         }
 

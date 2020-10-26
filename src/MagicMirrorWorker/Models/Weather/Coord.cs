@@ -2,7 +2,7 @@
 
 namespace MagicMirrorWorker.Models.Weather
 {
-	public class Coord
+    public class Coord
     {
         [JsonPropertyName("lat")]
         public double Lat { get; set; }
